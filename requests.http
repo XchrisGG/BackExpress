@@ -3,14 +3,16 @@ POST  http://localhost:9000/api/users HTTP/1.1
 Content-Type: application/json
 
 {
-  "nombres": "Alejanddsadasdsaro ",
-  "apellidos": "Perez",
-  "email": "alejandro@gmail.com",
+  "nombres": "Christian",
+  "apellidos": "Solano",
+  "edad": 24,
   "sexo": "Masculino",
-  "edad": "24",
-  "password": "chris3103"
-     
+  "fechaNacimiento": "2000-03-31",
+  "pais": "Colombia",
+  "email": "hosddlassddkkdsdss3@gmail.com",
+  "password": "bmth310333"
 }
+
 
 
 ###
@@ -19,9 +21,10 @@ GET http://localhost:9000/api/users
 
 ###
 POST  http://localhost:9000/api/login HTTP/1.1
-Content-Type: apllication/json
+Content-Type: application/json
 
 {
-  "email": "alex3103@gmail.com",
-  "password": "chris3103"
+  "email": "holassss3@gmail.com",
+  "password": "bmth310333"
 }
+

@@ -2,36 +2,39 @@ const express = require("express");
 const User = require("../models/user"); // Importa el schema de usuario
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { generateRandomKey, vigenereEncrypt, vigenereDecrypt } = require('../utils/vigenere');
 
 
 const router = express.Router();
 
 // Ruta para crear un usuario
 router.post('/users', async (req, res) => {
-   try {
-       const { nombres, apellidos, email, sexo, edad, password } = req.body;
+    try {
+        const { nombres, apellidos, edad, sexo, fechaNacimiento, pais, email, password } = req.body;
 
-       // Generar una clave de cifrado aleatoria
-       
+        // Cifrar la contraseña antes de guardarla
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-       // Crear una nueva instancia del modelo User con datos cifrados
-       const newUser = new User({
-           nombres,
-           apellidos,
-           email, // Almacena el correo electrónico cifrado
-           sexo,
-           edad,
-           password, // Almacena la contraseña cifrada
-       });
+        // Crear una nueva instancia del modelo User con la contraseña cifrada
+        const newUser = new User({
+            nombres,
+            apellidos,
+            edad,
+            sexo,
+            fechaNacimiento,
+            pais,
+            email,
+            password: hashedPassword, // Guardar la contraseña cifrada
+        });
 
-       // Guardar el nuevo usuario en la base de datos
-       const data = await newUser.save();
-       res.json(data);
-   } catch (error) {
-       res.json({ message: error.message });
-   }
+        // Guardar el nuevo usuario en la base de datos
+        const data = await newUser.save();
+        res.status(201).json(data);
+    } catch (error) {
+        console.error('Error al crear el usuario:', error);
+        res.status(400).json({ message: error.message });
+    }
 });
+
 
 // Ruta para obtener todos los usuarios
 router.get("/users", (req, res) => {

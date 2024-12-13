@@ -5,31 +5,47 @@ const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
-router.post("/login", async (req, res) => {
+const SECRET_KEY = 'tu_clave_secreta'; // Cambia esto por una clave más segura y almacénala en variables de entorno
+
+router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log(`Email recibido: ${email}`);
-        console.log(`Contraseña recibida: ${password}`);
-        const user = await User.findOne({email});
-        console.log(`Correo para comprobar: ${user}`);
-        if (!user){
-            return res.status(400).json({ message: "Usuario no encontrado"});
+
+        console.log("Iniciando sesión para:", email);
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            console.log("Usuario no encontrado:", email);
+            return res.status(404).json({ message: 'Usuario no encontrado' });
         }
 
-        console.log(`Contraseña a evaluar: ${user.password}`)
+        console.log("Usuario encontrado:", user);
 
-
-        if(password !== user.password){
-            return res.status(400).json({ message: "Contraseña incorrecta"});
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            console.log("Contraseña incorrecta para:", email);
+            return res.status(401).json({ message: 'Contraseña incorrecta' });
         }
 
-        const token = jwt.sign({id: user._id}, "tu_secreto_jwt", { expiresIn: '1'});
+        const token = jwt.sign(
+            { userId: user._id, email: user.email },
+            SECRET_KEY,
+            { expiresIn: '1h' }
+        );
 
-        res.json({token});
-    
-    }catch (error) {
-        res.status(500),json({ message: error.message});
-
+        res.status(200).json({
+            message: 'Inicio de sesión exitoso',
+            token,
+            user: {
+                id: user._id,
+                nombres: user.nombres,
+                apellidos: user.apellidos,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        console.error("Error en el servidor:", error.message);
+        res.status(500).json({ message: 'Error en el servidor', error: error.message });
     }
 });
 module.exports = router; 

@@ -14,36 +14,43 @@ const userSchema = mongoose.Schema({
         trim: true,
         match: [/^[a-zA-Z\s]+$/]
     },
-    email: {
-        type: String,
-        required: true,
-        trim: true,
-        unique: true
-        // Note: No se valida el formato aquí, ya que se cifrará
-    },
-    sexo: {
-        type: String,
-        enum: ['Masculino', 'Femenino'],
-        required: true
-    },
     edad: {
         type: Number,
         required: true,
         min: 0,
         max: 99,
-        validate:{
-            validator: function(v){
+        validate: {
+            validator: function(v) {
                 return /^[0-9]{1,2}$/.test(v);
             },
             message: props => `${props.value} no es una edad válida! Debe ser un número de uno o dos dígitos.`
         }
     },
+    sexo: {
+        type: String,
+        enum: ['Masculino', 'Femenino', 'No especificar'],
+        required: true
+    },
+    fechaNacimiento: {
+        type: Date,
+        required: true
+    },
+    pais: {
+        type: String,
+        required: true,
+        trim: true,
+        match: [/^[a-zA-Z\s]+$/, 'El campo país solo puede contener caracteres alfabéticos y espacios']
+    },
+    email: {
+        type: String,
+        required: true,
+        trim: true,
+        unique: true
+    },
     password: {
         type: String,
         required: true
-        // Note: No se valida el formato aquí, ya que se cifrará
     }
- 
 });
 
 userSchema.plugin(uniqueValidator, { message: 'El {PATH} YA ESTA EN Uso' });
